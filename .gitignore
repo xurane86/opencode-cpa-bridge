@@ -1,0 +1,10 @@
+dist/
+plugins/
+*.so
+*.dylib
+*.dll
+*.h
+*.zip
+checksums.txt
+opencode-cpa-bridge-data/
+.workbuddy/
