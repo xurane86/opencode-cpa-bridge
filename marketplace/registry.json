@@ -5,10 +5,10 @@
       "id": "opencode-cpa-bridge",
       "name": "OpenCode Go",
       "description": "将 OpenCode Go（Go / Go Plus / Go Teams）订阅接入 CPA，并提供中文可视化控制台：凭据、模型目录、三窗口额度监控、请求日志与设置全部在页面内完成。 / Connect an OpenCode Go subscription to CPA with a Chinese management console: credentials, model catalog, quota monitoring, request logs and settings, all in the page.",
-      "author": "RuneChen",
+      "author": "xurane86",
       "version": "0.1.0",
-      "repository": "https://github.com/RuneChen/opencode-cpa-bridge",
-      "homepage": "https://github.com/RuneChen/opencode-cpa-bridge",
+      "repository": "https://github.com/xurane86/opencode-cpa-bridge",
+      "homepage": "https://github.com/xurane86/opencode-cpa-bridge",
       "license": "MIT",
       "tags": ["opencode-go", "provider", "streaming", "console", "quota"],
       "install": { "type": "github-release" }
