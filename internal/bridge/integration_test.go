@@ -252,7 +252,7 @@ func newMockOpenCodeGo(t *testing.T) *mockOpenCodeGo {
 		st.mu.Lock()
 		st.lastPath = r.URL.Path
 		st.lastAuth = r.Header.Get("Authorization")
-		st.lastChatSession = r.Header.Get("x-opencodego-session")
+		st.lastChatSession = r.Header.Get("x-opencode-session")
 		st.lastChatBody = body
 		st.authSeen = append(st.authSeen, r.Header.Get("Authorization"))
 		st.chatHits++
@@ -292,7 +292,7 @@ func newMockOpenCodeGo(t *testing.T) *mockOpenCodeGo {
 		st.mu.Lock()
 		st.lastMessagesAuth = r.Header.Get("x-api-key")
 		st.lastMessagesVersion = r.Header.Get("Anthropic-Version")
-		st.lastMessagesSession = r.Header.Get("x-opencodego-session")
+		st.lastMessagesSession = r.Header.Get("x-opencode-session")
 		st.lastMessagesBody = body
 		st.mu.Unlock()
 		if stream, _ := parsed["stream"].(bool); stream {
@@ -310,7 +310,7 @@ func newMockOpenCodeGo(t *testing.T) *mockOpenCodeGo {
 		st.mu.Lock()
 		st.lastMessagesAuth = r.Header.Get("x-api-key")
 		st.lastMessagesVersion = r.Header.Get("Anthropic-Version")
-		st.lastMessagesSession = r.Header.Get("x-opencodego-session")
+		st.lastMessagesSession = r.Header.Get("x-opencode-session")
 		st.lastMessagesBody = body
 		st.mu.Unlock()
 		w.Header().Set("Content-Type", "application/json")
@@ -322,7 +322,7 @@ func newMockOpenCodeGo(t *testing.T) *mockOpenCodeGo {
 		_ = json.Unmarshal(body, &parsed)
 		st.mu.Lock()
 		st.lastResponsesAuth = r.Header.Get("Authorization")
-		st.lastResponsesSession = r.Header.Get("x-opencodego-session")
+		st.lastResponsesSession = r.Header.Get("x-opencode-session")
 		st.lastResponsesBody = body
 		st.mu.Unlock()
 		if stream, _ := parsed["stream"].(bool); stream {
@@ -502,8 +502,8 @@ func TestRegisterAndDiscover(t *testing.T) {
 		if err := json.Unmarshal(c.payload, &wire); err != nil {
 			t.Fatalf("catalog callback payload: %v", err)
 		}
-		if strings.HasSuffix(wire.URL, "/models") && wire.Headers.Get("x-opencodego-session") != "" {
-			t.Fatalf("catalog /models request must not include x-opencodego-session: %v", wire.Headers)
+		if strings.HasSuffix(wire.URL, "/models") && wire.Headers.Get("x-opencode-session") != "" {
+			t.Fatalf("catalog /models request must not include x-opencode-session: %v", wire.Headers)
 		}
 	}
 	if byID["opencode-go/glm-5.2"].DisplayName != "glm-5.2" {
@@ -550,7 +550,7 @@ func TestChatNonStreamRoundTrip(t *testing.T) {
 	chatSession := st.lastChatSession
 	st.mu.Unlock()
 	if chatSession != "8fa02f28ce729c164657f5ab84cd1e38f690981132765ab45c6a71aeeb3dacd1" {
-		t.Fatalf("mock x-opencodego-session = %q", chatSession)
+		t.Fatalf("mock x-opencode-session = %q", chatSession)
 	}
 	if upstream["model"] != "glm-5.2" {
 		t.Fatalf("upstream model = %v, want bare glm-5.2", upstream["model"])
@@ -682,7 +682,7 @@ func TestMessagesNonStreamRoundTrip(t *testing.T) {
 		t.Fatal("anthropic-version header missing")
 	}
 	if session != "115ff558a2b5fa032b29f2f452673404575e82417d2843e0f410e890c3e85efa" {
-		t.Fatalf("mock x-opencodego-session = %q", session)
+		t.Fatalf("mock x-opencode-session = %q", session)
 	}
 	var upstream map[string]any
 	if err := json.Unmarshal(raw, &upstream); err != nil {
@@ -746,7 +746,7 @@ func TestResponsesNonStreamRoundTrip(t *testing.T) {
 		t.Fatalf("mock Authorization = %q", auth)
 	}
 	if session != "8f434346648f6b96df89dda901c5176b10a6d83961dd3c1ac88b59b2dc327aa4" {
-		t.Fatalf("mock x-opencodego-session = %q", session)
+		t.Fatalf("mock x-opencode-session = %q", session)
 	}
 	var upstream map[string]any
 	if err := json.Unmarshal(raw, &upstream); err != nil {
@@ -823,7 +823,7 @@ func TestChatStreamingRoundTrip(t *testing.T) {
 		t.Fatal("mock did not see stream:true")
 	}
 	if session != "8f434346648f6b96df89dda901c5176b10a6d83961dd3c1ac88b59b2dc327aa4" {
-		t.Fatalf("mock x-opencodego-session = %q", session)
+		t.Fatalf("mock x-opencode-session = %q", session)
 	}
 
 	events := emittedEvents(t, f)
@@ -867,7 +867,7 @@ func TestMessagesStreamingRoundTrip(t *testing.T) {
 		t.Fatal("mock did not see stream:true")
 	}
 	if session != "8f434346648f6b96df89dda901c5176b10a6d83961dd3c1ac88b59b2dc327aa4" {
-		t.Fatalf("mock x-opencodego-session = %q", session)
+		t.Fatalf("mock x-opencode-session = %q", session)
 	}
 
 	events := emittedEvents(t, f)
@@ -902,7 +902,7 @@ func TestResponsesStreamingRoundTrip(t *testing.T) {
 		t.Fatal("mock did not see stream:true")
 	}
 	if session != "8f434346648f6b96df89dda901c5176b10a6d83961dd3c1ac88b59b2dc327aa4" {
-		t.Fatalf("mock x-opencodego-session = %q", session)
+		t.Fatalf("mock x-opencode-session = %q", session)
 	}
 
 	events := emittedEvents(t, f)

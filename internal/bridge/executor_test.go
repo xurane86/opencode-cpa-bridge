@@ -233,7 +233,7 @@ func assertSessionHeaders(t *testing.T, wire map[string]any, wantSession, wantAu
 	if !ok {
 		t.Fatalf("headers missing: %v", wire)
 	}
-	if got := headers["X-Opencodego-Session"].([]any)[0].(string); got != wantSession {
+	if got := headers["X-Opencode-Session"].([]any)[0].(string); got != wantSession {
 		t.Fatalf("session = %q, want %q", got, wantSession)
 	}
 	if got := headers["Authorization"]; wantAuth != "" {
@@ -404,7 +404,7 @@ func TestExecuteChatRoute(t *testing.T) {
 	if headers["Authorization"].([]any)[0].(string) != "Bearer "+testKey {
 		t.Fatalf("auth header wrong: %v", headers)
 	}
-	if headers["X-Opencodego-Session"].([]any)[0].(string) != "8f434346648f6b96df89dda901c5176b10a6d83961dd3c1ac88b59b2dc327aa4" {
+	if headers["X-Opencode-Session"].([]any)[0].(string) != "8f434346648f6b96df89dda901c5176b10a6d83961dd3c1ac88b59b2dc327aa4" {
 		t.Fatalf("session header wrong: %v", headers)
 	}
 	var upstream map[string]any
@@ -462,7 +462,7 @@ func TestExecuteMessagesRouteNativeClaudePassesThrough(t *testing.T) {
 	if headers["Anthropic-Version"].([]any)[0].(string) == "" {
 		t.Fatalf("Anthropic-Version missing: %v", headers)
 	}
-	if headers["X-Opencodego-Session"].([]any)[0].(string) != "8f434346648f6b96df89dda901c5176b10a6d83961dd3c1ac88b59b2dc327aa4" {
+	if headers["X-Opencode-Session"].([]any)[0].(string) != "8f434346648f6b96df89dda901c5176b10a6d83961dd3c1ac88b59b2dc327aa4" {
 		t.Fatalf("session header wrong: %v", headers)
 	}
 	if _, has := headers["Authorization"]; has {
@@ -522,7 +522,7 @@ func TestExecuteResponsesRouteNativePassesThrough(t *testing.T) {
 	if headers["Authorization"].([]any)[0].(string) != "Bearer "+testKey {
 		t.Fatalf("bearer missing: %v", headers)
 	}
-	if headers["X-Opencodego-Session"].([]any)[0].(string) != "8f434346648f6b96df89dda901c5176b10a6d83961dd3c1ac88b59b2dc327aa4" {
+	if headers["X-Opencode-Session"].([]any)[0].(string) != "8f434346648f6b96df89dda901c5176b10a6d83961dd3c1ac88b59b2dc327aa4" {
 		t.Fatalf("session header wrong: %v", headers)
 	}
 }
@@ -635,7 +635,7 @@ func TestExecuteStreamHappyPathClaudeSource(t *testing.T) {
 	}
 	streamWire := decodePayload(t, f.callsOf(pluginabi.MethodHostHTTPDoStream)[0])
 	streamHeaders := streamWire["headers"].(map[string]any)
-	if streamHeaders["X-Opencodego-Session"].([]any)[0].(string) != "8f434346648f6b96df89dda901c5176b10a6d83961dd3c1ac88b59b2dc327aa4" {
+	if streamHeaders["X-Opencode-Session"].([]any)[0].(string) != "8f434346648f6b96df89dda901c5176b10a6d83961dd3c1ac88b59b2dc327aa4" {
 		t.Fatalf("stream session header wrong: %v", streamHeaders)
 	}
 	m.bridge.WaitForInFlight(5 * time.Second)
@@ -724,7 +724,7 @@ func TestExecuteStreamCloseAfterFinishFlushesTerminal(t *testing.T) {
 	}
 	streamWire := decodePayload(t, f.callsOf(pluginabi.MethodHostHTTPDoStream)[0])
 	streamHeaders := streamWire["headers"].(map[string]any)
-	if streamHeaders["X-Opencodego-Session"].([]any)[0].(string) != "8f434346648f6b96df89dda901c5176b10a6d83961dd3c1ac88b59b2dc327aa4" {
+	if streamHeaders["X-Opencode-Session"].([]any)[0].(string) != "8f434346648f6b96df89dda901c5176b10a6d83961dd3c1ac88b59b2dc327aa4" {
 		t.Fatalf("stream session header wrong: %v", streamHeaders)
 	}
 	m.bridge.WaitForInFlight(5 * time.Second)
@@ -880,7 +880,7 @@ func TestExecuteStreamResponsesRouteNative(t *testing.T) {
 	}
 	streamWire := decodePayload(t, f.callsOf(pluginabi.MethodHostHTTPDoStream)[0])
 	streamHeaders := streamWire["headers"].(map[string]any)
-	if streamHeaders["X-Opencodego-Session"].([]any)[0].(string) != "8f434346648f6b96df89dda901c5176b10a6d83961dd3c1ac88b59b2dc327aa4" {
+	if streamHeaders["X-Opencode-Session"].([]any)[0].(string) != "8f434346648f6b96df89dda901c5176b10a6d83961dd3c1ac88b59b2dc327aa4" {
 		t.Fatalf("stream session header wrong: %v", streamHeaders)
 	}
 	m.bridge.WaitForInFlight(5 * time.Second)
@@ -1341,7 +1341,7 @@ func TestConvertNonStreamSeamBranches(t *testing.T) {
 	if got := registry.JoinUpstreamURL("https://gw.test/", "/v1/responses"); got != "https://gw.test/responses" {
 		t.Fatalf("url join = %q", got)
 	}
-	if got := upstreamAuthHeaders(registry.RouteChatCompletions, "k", "session"); got.Get("Authorization") != "Bearer k" || got.Get("x-opencodego-session") != "session" {
+	if got := upstreamAuthHeaders(registry.RouteChatCompletions, "k", "session"); got.Get("Authorization") != "Bearer k" || got.Get("x-opencode-session") != "session" {
 		t.Fatalf("bearer headers = %v", got)
 	}
 	// Adapters own status classification uniformly.

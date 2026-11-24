@@ -116,7 +116,7 @@ func (m *Manager) handleExecute(request []byte) ([]byte, error) {
 		m.telemetryRecord(RequestLog{Model: req.Model, UpstreamModel: res.rec.UpstreamID, SourceFormat: req.SourceFormat, Error: eErr.Message, DurationMS: time.Since(start).Milliseconds(), AuthID: req.AuthID})
 		return classEnvelope(eErr), nil
 	}
-	debugTrace("executor session mode=%s source_format=%s x_opencodego_session=%s fallback=%t", "non-stream", req.SourceFormat, sessionID, sessionID == emptyOpenCodeGoSessionID)
+	debugTrace("executor session mode=%s source_format=%s x_opencode_session=%s fallback=%t", "non-stream", req.SourceFormat, sessionID, sessionID == emptyOpenCodeGoSessionID)
 	upstreamBody, eErr := buildUpstreamRequest(res.rec.Protocol, res.rec.UpstreamID, req.SourceFormat, req.OriginalRequest, res.rec.Thinking)
 	if eErr != nil {
 		m.telemetryRecord(RequestLog{Model: req.Model, UpstreamModel: res.rec.UpstreamID, SourceFormat: req.SourceFormat, Error: eErr.Message, DurationMS: time.Since(start).Milliseconds(), AuthID: req.AuthID})
@@ -183,7 +183,10 @@ func upstreamAuthHeaders(route registry.Route, key, sessionID string) http.Heade
 		// Chat Completions and Responses endpoints are OpenAI-style bearer.
 		h = openai.AuthHeaders(key)
 	}
-	h.Set("x-opencodego-session", sessionID)
+	// OpenCode Go routes and caches by x-opencode-session; omitting it or using
+	// the legacy x-opencodego-session name makes the upstream reject every
+	// inference request with HTTP 400 MissingSessionID.
+	h.Set("x-opencode-session", sessionID)
 	return h
 }
 
@@ -197,7 +200,8 @@ func resolveOpenCodeGoSessionID(req executorRequest) (string, *fault.Error) {
 	}
 	for _, name := range []string{
 		"X-Session-Affinity",
-		"X-Opencodego-Session",
+		"X-OpenCode-Session",   // documented OpenCode Go session header
+		"X-Opencodego-Session", // legacy name kept for older callers
 		"X-Session-Id",
 		"X-Claude-Code-Session-Id",
 		"Session-Id",
@@ -394,7 +398,7 @@ func (m *Manager) executeStream(req executorRequest) ([]byte, error) {
 		m.telemetryRecord(RequestLog{Model: req.Model, UpstreamModel: res.rec.UpstreamID, SourceFormat: req.SourceFormat, Stream: true, Error: eErr.Message, DurationMS: time.Since(start).Milliseconds(), AuthID: req.AuthID})
 		return classEnvelope(eErr), nil
 	}
-	debugTrace("executor session mode=%s source_format=%s x_opencodego_session=%s fallback=%t", "stream", req.SourceFormat, sessionID, sessionID == emptyOpenCodeGoSessionID)
+	debugTrace("executor session mode=%s source_format=%s x_opencode_session=%s fallback=%t", "stream", req.SourceFormat, sessionID, sessionID == emptyOpenCodeGoSessionID)
 	upstreamBody, eErr := buildUpstreamRequest(res.rec.Protocol, res.rec.UpstreamID, req.SourceFormat, req.OriginalRequest, res.rec.Thinking)
 	if eErr != nil {
 		m.telemetryRecord(RequestLog{Model: req.Model, UpstreamModel: res.rec.UpstreamID, SourceFormat: req.SourceFormat, Stream: true, Error: eErr.Message, DurationMS: time.Since(start).Milliseconds(), AuthID: req.AuthID})

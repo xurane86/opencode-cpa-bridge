@@ -247,7 +247,7 @@ func assertSessionLine(t *testing.T, line, sourceFormat, wantHash string, stream
 	if stream {
 		mode = "stream"
 	}
-	want := fmt.Sprintf("executor session mode=%s source_format=%s x_opencodego_session=%s fallback=%t", mode, sourceFormat, wantHash, fallback)
+	want := fmt.Sprintf("executor session mode=%s source_format=%s x_opencode_session=%s fallback=%t", mode, sourceFormat, wantHash, fallback)
 	if !strings.Contains(line, want) {
 		t.Fatalf("session debug line = %q, want it to contain %q", line, want)
 	}

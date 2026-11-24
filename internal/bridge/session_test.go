@@ -16,8 +16,8 @@ func TestResolveOpenCodeGoSessionIDPrecedence(t *testing.T) {
 		want     string
 	}{
 		{name: "canonical wins", metadata: map[string]any{"canonical_session_id": "canonical"}, headers: http.Header{"X-Session-Affinity": []string{"header"}}, want: "canonical"},
-		{name: "headers use documented order", headers: http.Header{"X-Session-Affinity": []string{"affinity"}, "X-Opencodego-Session": []string{"opencodego"}}, want: "affinity"},
-		{name: "empty earlier header is skipped", headers: http.Header{"X-Session-Affinity": []string{""}, "X-Opencodego-Session": []string{"opencodego"}}, want: "opencodego"},
+		{name: "headers use documented order", headers: http.Header{"X-Session-Affinity": []string{"affinity"}, "X-Opencode-Session": []string{"opencodego"}}, want: "affinity"},
+		{name: "empty earlier header is skipped", headers: http.Header{"X-Session-Affinity": []string{""}, "X-Opencode-Session": []string{"opencodego"}}, want: "opencodego"},
 		{name: "opaque values are preserved", headers: http.Header{"X-Session-Id": []string{"  opaque\tvalue  "}}, want: "  opaque\tvalue  "},
 	}
 	for _, tc := range tests {
